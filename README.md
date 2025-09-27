@@ -36,5 +36,5 @@ You can run Clipboard Buddy locally in seconds:
 
 1. **Clone this repository:**
    ```bash
-   git clone https://github.com/YOUR-USERNAME/clipboard-buddy.git
+   git clone https://github.com/Jaibone/clipboard-buddy.git
    cd clipboard-buddy
