@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clipboard Buddy</title>
+<link rel="icon" type="image/png" href="mascot.png">
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    font-family: 'Fredoka', 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #dbeafe 0%, #e0f2f1 50%, #fef9c3 100%);
+  }
+
+  .container {
+    width: 95%;
+    max-width: 700px;
+    background: #ffffffd8;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+
+  .mascot {
+    width: 100px;
+    height: auto;
+    margin: 0 auto 0.6rem auto;
+    display: block;
+  }
+
+  h2 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 2.2rem;
+    color: #0078d4;
+    letter-spacing: 1px;
+    margin: 0.5rem 0 1.4rem 0;
+  }
+
+  .field {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  textarea {
+    flex: 1;
+    padding: 0.6rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    resize: vertical;
+    min-height: 3rem;
+    max-height: 10rem;
+    line-height: 1.4;
+  }
+
+  button {
+    padding: 0.45rem 0.9rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: white;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  button:hover { transform: translateY(-1px); }
+
+  .copy-btn { background: #0078d4; }
+  .copy-btn:hover { background: #005fa3; }
+
+  .paste-btn { background: #17a2b8; }
+  .paste-btn:hover { background: #117a8b; }
+
+  .delete-btn {
+    background: #dc3545;
+    align-self: center;
+    height: 2.2rem;
+  }
+  .delete-btn:hover { background: #b02a37; }
+
+  #addBtn {
+    background: #28a745;
+    display: block;
+    margin: 1.5rem auto 0;
+    padding: 0.6rem 1.4rem;
+    font-size: 1rem;
+  }
+  #addBtn:hover { background: #1e7e34; }
+
+  @media (max-width: 600px) {
+    .field {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    textarea { width: 100%; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <img src="mascot.png" alt="Clipboard Buddy Mascot" class="mascot">
+    <h2>Clipboard Buddy</h2>
+    <div id="fields"></div>
+    <button id="addBtn">+ Add Field</button>
+  </div>
+
+  <script>
+    const fieldsContainer = document.getElementById('fields');
+    const addBtn = document.getElementById('addBtn');
+
+    function createField(value = '', deletable = false) {
+      const fieldDiv = document.createElement('div');
+      fieldDiv.className = 'field';
+
+      // Delete button (for fields after the first)
+      if (deletable) {
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = '✕';
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.title = 'Delete this field';
+        deleteBtn.onclick = () => fieldDiv.remove();
+        fieldDiv.appendChild(deleteBtn);
+      }
+
+      // Multi-line textarea
+      const textarea = document.createElement('textarea');
+      textarea.value = value;
+      textarea.placeholder = 'Enter text...';
+
+      // Copy button
+      const copyBtn = document.createElement('button');
+      copyBtn.textContent = 'Copy';
+      copyBtn.className = 'copy-btn';
+      copyBtn.onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(textarea.value);
+          copyBtn.textContent = 'Copied!';
+          setTimeout(() => (copyBtn.textContent = 'Copy'), 1500);
+        } catch (err) {
+          alert('Clipboard copy failed: ' + err);
+        }
+      };
+
+      // Paste button
+      const pasteBtn = document.createElement('button');
+      pasteBtn.textContent = 'Paste';
+      pasteBtn.className = 'paste-btn';
+      pasteBtn.onclick = async () => {
+        try {
+          const text = await navigator.clipboard.readText();
+          textarea.value = text;
+          pasteBtn.textContent = 'Pasted!';
+          setTimeout(() => (pasteBtn.textContent = 'Paste'), 1500);
+        } catch (err) {
+          alert('Clipboard paste failed: ' + err);
+        }
+      };
+
+      // Add elements in logical order
+      fieldDiv.appendChild(textarea);
+      fieldDiv.appendChild(copyBtn);
+      fieldDiv.appendChild(pasteBtn);
+
+      fieldsContainer.appendChild(fieldDiv);
+    }
+
+    addBtn.onclick = () => createField('', true);
+    createField();
+  </script>
+</body>
+</html>
